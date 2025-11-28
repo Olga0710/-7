@@ -1,122 +1,131 @@
-﻿namespace Builder
+﻿using System;
+
+namespace AbstractFactory
 {
-    class Pizza
+    public class AbstractFactory
     {
-        string dough;
-        string sauce;
-        string topping;
-        public Pizza() { }
-        public void SetDough(string d) { dough = d; }
-        public void SetSauce(string s) { sauce = s; }
-        public void SetTopping(string t) { topping = t; }
-        public void Info()
+        abstract class Car
         {
-            Console.WriteLine("Dough: {0}\nSause: {1}\nTopping: {2}",
-           dough, sauce, topping);
+            public abstract void Info();
         }
-    }
-    abstract class PizzaBuilder
-    {
-        protected Pizza pizza;
-        public PizzaBuilder() { }
-        public Pizza GetPizza() { return pizza; }
-        public void CreateNewPizza() { pizza = new Pizza(); }
-        public abstract void BuildDough();
-        public abstract void BuildSauce();
-        public abstract void BuildTopping();
-    }
-
-     //Concrete Builder
-   class HawaiianPizzaBuilder : PizzaBuilder
-    {
-        public override void BuildDough() { pizza.SetDough("cross"); }
-        public override void BuildSauce() { pizza.SetSauce("mild"); }
-        public override void BuildTopping()
+        class Ford : Car
         {
-            pizza.SetTopping("ham+pineapple");
-        }
-    }
-
-    //Concrete Builder
-    class SpicyPizzaBuilder : PizzaBuilder
-    {
-        public override void BuildDough()
-        {
-            pizza.SetDough("panbaked"); 
-        }
-        public override void BuildSauce() { pizza.SetSauce("hot"); }
-        public override void BuildTopping()
-        {
-            pizza.SetTopping("pepparoni+salami");
-        }
-    }
-
-    class MargaritaPizzaBuilder:PizzaBuilder
-    {
-        public override void BuildDough()
-        {
-
+            public override void Info()
             {
-                pizza.SetDough("thin");
+                Console.WriteLine("Ford");
+            }
+        }
+        class Toyota : Car
+        {
+            public override void Info()
+            {
+                Console.WriteLine("Toyota");
             }
         }
 
-        public override void BuildSauce()
+        class Mersedes : Car
         {
-
-            pizza.SetSauce("tomato");
-         }
-        public override void BuildTopping()
-        {
-            pizza.SetTopping("mozzarella + basil");
-        }
-    }
-    /** "Director" */
-    class Waiter
-    {
-        private PizzaBuilder pizzaBuilder;
-        public void SetPizzaBuilder(PizzaBuilder pb)
-        {
-            pizzaBuilder = pb;
-        }
-        public Pizza GetPizza() { return pizzaBuilder.GetPizza(); }
-        public void ConstructPizza()
-        {
-            pizzaBuilder.CreateNewPizza();
-            pizzaBuilder.BuildDough();
-            pizzaBuilder.BuildSauce();
-            pizzaBuilder.BuildTopping();
-        }
-        class BuilderExample
-        {
-            public static void Main(String[] args)
+            public override void Info()
             {
-                Waiter waiter = new Waiter();
-
-                PizzaBuilder hawaiianPizzaBuilder = new HawaiianPizzaBuilder();
-
-                PizzaBuilder spicyPizzaBuilder = new SpicyPizzaBuilder();
-
-                PizzaBuilder margaritaPizzaBuilder = new MargaritaPizzaBuilder();
-                Console.WriteLine("Hawaiian");
-                waiter.SetPizzaBuilder(hawaiianPizzaBuilder);
-                waiter.ConstructPizza();
-                Pizza pizza = waiter.GetPizza();
-                pizza.Info();
-
-                Console.WriteLine("Spicy");
-                waiter.SetPizzaBuilder(spicyPizzaBuilder);
-                waiter.ConstructPizza();
-                Pizza pizza1 = waiter.GetPizza();
-                pizza1.Info();
-
-                Console.WriteLine("Margarita");
-                waiter.SetPizzaBuilder(margaritaPizzaBuilder);
-                waiter.ConstructPizza();
-                Pizza pizza2 = waiter.GetPizza();
-                pizza2.Info();
-                Console.ReadKey();
+                Console.WriteLine("Mersedes");
             }
+        }
+
+        abstract class Engine
+        {
+            public virtual void GetPower() { }
+        }
+        class FordEngine : Engine
+        {
+            public override void GetPower()
+            {
+                Console.WriteLine("Ford Engine 4.4");
+            }
+        }
+        class ToyotaEngine : Engine
+        {
+            public override void GetPower()
+            {
+                Console.WriteLine("Toyota Engine 3.2");
+            }
+        }
+
+        class MersedesEngine : Engine
+        {
+            public override void GetPower()
+            {
+                Console.WriteLine("Mersedes Engine 5.5");
+            }
+        }
+
+        interface ICarFactory
+        {
+            Car CreateCar();
+            Engine CreateEngine();
+        }
+        // ConcreteFactory1
+        class FordFactory : ICarFactory
+        {
+            // from CarFactory
+            Car ICarFactory.CreateCar()
+            {
+                return new Ford();
+            }
+            Engine ICarFactory.CreateEngine()
+            {
+                return new FordEngine();
+            }
+        }
+
+        class ToyotaFactory : ICarFactory
+        {
+            // from CarFactory
+            Car ICarFactory.CreateCar()
+            {
+                return new Toyota();
+            }
+            Engine ICarFactory.CreateEngine()
+            {
+                return new ToyotaEngine();
+            }
+        }
+        class MersedesFactory : ICarFactory
+        {
+            // from CarFactory
+            Car ICarFactory.CreateCar()
+            {
+                return new Mersedes();
+            }
+            Engine ICarFactory.CreateEngine()
+            {
+                return new MersedesEngine();
+            }
+
+        }
+        static void Main(string[] args)
+        {
+            ICarFactory carFactory = new ToyotaFactory();
+            Car myCar = carFactory.CreateCar();
+            myCar.Info();
+            Engine myEngine = carFactory.CreateEngine();
+            myEngine.GetPower();
+
+            carFactory = new FordFactory();
+            myCar = carFactory.CreateCar();
+            myCar.Info();
+            myEngine = carFactory.CreateEngine();
+            myEngine.GetPower();
+
+            carFactory = new MersedesFactory();
+            myCar = carFactory.CreateCar();
+            myCar.Info();
+            myEngine = carFactory.CreateEngine();
+            myEngine.GetPower();
+            Console.ReadKey();
         }
     }
 }
+
+
+
+       
